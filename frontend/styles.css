@@ -41,6 +41,63 @@ body {
     display: flex;
     flex-direction: column;
     padding: 20px;
+    min-height: 200px;
+}
+
+/* ... rest of existing styles ... */
+
+/* --- RESPONSIVE DESIGN --- */
+
+/* Tablets & Small Laptops */
+@media (max-width: 1200px) {
+    .app-container {
+        grid-template-columns: 280px 1fr;
+        height: auto;
+    }
+    .status-panel {
+        grid-column: span 2;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    .status-panel .card {
+        flex: 1;
+        min-width: 300px;
+    }
+}
+
+/* Mobile Devices */
+@media (max-width: 850px) {
+    .app-container {
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+        height: auto;
+    }
+    
+    .sidebar {
+        order: 1;
+        margin-bottom: 0;
+    }
+    
+    .main-view {
+        order: 2;
+    }
+    
+    .status-panel {
+        order: 3;
+    }
+    
+    .heatmap-container {
+        height: 400px;
+    }
+    
+    .chat-window {
+        height: 400px;
+    }
+
+    .logo-section h2 {
+        font-size: 1.2rem;
+    }
 }
 
 .logo-section {
@@ -95,16 +152,28 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    aspect-ratio: 16 / 9; /* Default desktop ratio */
 }
 
 #stadium-map {
-    width: 90%;
+    width: auto;
     height: 90%;
+    aspect-ratio: 1 / 1; /* Keep it circular */
     background: #15151a;
     border: 2px solid #333;
     border-radius: 50%;
     position: relative;
     box-shadow: 0 0 50px rgba(0, 242, 255, 0.1);
+}
+
+@media (max-width: 850px) {
+    .heatmap-container {
+        aspect-ratio: 1 / 1; /* Square on mobile */
+    }
+    #stadium-map {
+        width: 90%;
+        height: auto;
+    }
 }
 
 .map-node {

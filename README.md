@@ -25,11 +25,13 @@ StadiumFlow is not just a digital map; it is a **Decision-Driven Optimization En
 ---
 
 ## ✨ Key Features (System-Grade)
-- **🛰️ Dynamic Flow Visualization**: Real-time Heatmapping with green/yellow/red congestion scoring.
+- **🛰️ Dynamic Flow Visualization**: High-fidelity architectural map with green/yellow/red congestion heatmapping.
 - **✨ Decision-Path AI**: Google Gemini-powered engine that calculates "Time-Impact" for every recommendation.
-- **⏱️ Predictive Queue Module**: Logic-based wait time estimation across all facility classes (Gates, Food, Washrooms).
-- **🔔 Proactive Flow Control**: AI-generated alerts that redirect fans *before* a bottleneck reaches critical mass.
+- **🔵 Live "Blue Dot" Tracking**: Real-time attendee localization using browser Geolocation and Motion Scaling.
+- **🧭 Compass-Heading Arrow**: Device Magnetometer integration to show exactly which way the user is facing.
+- **🛣️ Dynamic Pathfinding Lines**: Live Bezier-curve generation to visually draw a navigation path from user to destination.
 - **🕒 Event-Context Awareness**: High-urgency mode that shifts navigation logic from "Comfort" to "Speed" during game-restart windows.
+- **🎨 Crystalline Glass UI**: Sky-Blue and Frosted-White "Cloud SaaS" aesthetic for maximum readability.
 
 ---
 

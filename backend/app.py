@@ -109,18 +109,44 @@ def chat():
 
 def mock_decision_engine(query, data, event):
     query = query.lower()
-    time_ctx = event['time_remaining']
-    is_urgent = "mins" in time_ctx.lower() or "1'" in time_ctx or "2'" in time_ctx
+    time_ctx = event.get('time_remaining', '10 mins')
+    is_urgent = any(x in time_ctx.lower() for x in ["mins", "1'", "2'", "3'"])
 
-    if 'food' in query or 'eat' in query:
-        # Logic: Sort by wait time if urgent, else by crowd (comfort)
-        stalls = sorted(data['food_stalls'], key=lambda x: x['wait'] if is_urgent else x['crowd'])
-        best, second = stalls[0], stalls[1]
+    # Mapping keywords to data categories
+    target_data = []
+    category = "Facility"
+    
+    if any(x in query for x in ['food', 'eat', 'hungry', 'snack']):
+        target_data = data['food_stalls']
+        category = "Food Stall"
+    elif any(x in query for x in ['washroom', 'toilet', 'piss', 'restroom', 'bathroom']):
+        target_data = data['washrooms']
+        category = "Washroom"
+    elif any(x in query for x in ['gate', 'exit', 'leave', 'out']):
+        target_data = data['gates']
+        category = "Gate / Exit"
+
+    if target_data:
+        # Optimization Logic: Sort by wait time during urgency, else by crowd density
+        optimized = sorted(target_data, key=lambda x: x['wait'] if is_urgent else x['crowd'])
+        best, second = optimized[0], optimized[1]
         
-        urgency_note = "PRIORITY: Time-Critical (Game Restarting)" if is_urgent else "PRIORITY: Comfort & Flow"
-        return f"Recommendation: {best['name']}\n\nWhy:\n* {urgency_note}\n* {best['wait']} min wait is the lowest in your sector\n* Crowd density is manageable at {best['crowd']}%\n\nAlternative Option: {second['name']}\n\nEstimated Time Impact: Saves approx {second['wait'] - best['wait'] + 2} mins."
+        mode = "🚀 FASTEST PATH" if is_urgent else "🌈 COMFORT PATH"
+        
+        return f"""### RECOMMENDATION: {best['name']}
+        
+**Reasoning Matrix:**
+| Factor | Status |
+| :--- | :--- |
+| **Logic Mode** | {mode} |
+| **Queue Time** | {best['wait']} mins |
+| **Crowd Level** | {best['crowd']}% |
 
-    return "Recommendation: Please specify your destination (Gate, Food, or Washroom).\n\nWhy:\n* I need context to calculate the optimal time-path\n* Live flow varies significantly between facilities\n* Current location is detected as Section A"
+**AI Insight:** Based on localized telemetry, this {category} is your optimal choice for the current {event['time_remaining']} window.
+
+**Alternative:** {second['name']} (Slightly more congested)"""
+
+    return "### 🔎 Specify Destination\nI need to know if you are looking for a **Gate**, **Food Stall**, or **Washroom** to calculate the optimal path for you."
 
 if __name__ == '__main__':
     # Use environment port for deployment, default to 5000 for local dev

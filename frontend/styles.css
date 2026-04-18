@@ -158,12 +158,35 @@ body {
 #stadium-map {
     width: auto;
     height: 90%;
-    aspect-ratio: 1 / 1; /* Keep it circular */
-    background: #15151a;
+    aspect-ratio: 1 / 1;
+    background: radial-gradient(circle at center, #1b1b22 0%, #0a0a0c 100%);
     border: 2px solid #333;
     border-radius: 50%;
     position: relative;
     box-shadow: 0 0 50px rgba(0, 242, 255, 0.1);
+    background-image: 
+        radial-gradient(circle at center, transparent 30%, rgba(255,255,255,0.05) 31%, transparent 31.5%),
+        radial-gradient(circle at center, transparent 60%, rgba(255,255,255,0.05) 61%, transparent 61.5%),
+        linear-gradient(45deg, transparent 49%, rgba(255,255,255,0.03) 50%, transparent 51%),
+        linear-gradient(-45deg, transparent 49%, rgba(255,255,255,0.03) 50%, transparent 51%),
+        linear-gradient(0deg, transparent 49%, rgba(255,255,255,0.1) 50%, transparent 51%),
+        linear-gradient(90deg, transparent 49%, rgba(255,255,255,0.1) 50%, transparent 51%);
+}
+
+.live-indicator {
+    width: 6px;
+    height: 6px;
+    background: var(--red);
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(1.2); }
+    100% { opacity: 1; transform: scale(1); }
 }
 
 @media (max-width: 850px) {
@@ -181,9 +204,23 @@ body {
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    transform: translate(-50%, -50%);
     cursor: pointer;
-    transition: 0.3s;
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    z-index: 5;
+    animation: neural-pulse 3s infinite;
+}
+
+@keyframes neural-pulse {
+    0% { box-shadow: 0 0 0px var(--node-color); }
+    50% { box-shadow: 0 0 10px var(--node-color); }
+    100% { box-shadow: 0 0 0px var(--node-color); }
+}
+
+.map-node:hover {
+    transform: scale(1.6);
+    z-index: 20;
+    box-shadow: 0 0 20px var(--node-color) !important;
 }
 
 .map-node::after {

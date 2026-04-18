@@ -162,13 +162,27 @@ function renderMapNodes(data) {
         node.title = `${loc.name}: ${loc.wait} min wait`;
 
         // Click a node to ask the AI about it
-        node.addEventListener('click', () => {
-            chatInput.value = `Tell me about ${loc.name}`;
-            sendMessage();
-        });
+        node.onclick = () => {
+            appendMessage('user', `How do I get to ${loc.name}?`);
+            drawNavigationPath(userLivePos, { x: loc.pos[0], y: loc.pos[1] });
+            sendMessage(`How do I get to ${loc.name}?`);
+        };
         
         stadiumMap.appendChild(node);
     });
+}
+
+function drawNavigationPath(start, end) {
+    const path = document.getElementById('active-path');
+    if (!path) return;
+    
+    // Smooth Bezier curve for architectural feel
+    const midX = (start.x + end.x) / 2;
+    const midY = (start.y + end.y) / 2;
+    const d = `M ${start.x}% ${start.y}% Q ${midX + 5}% ${midY - 5}% ${end.x}% ${end.y}%`;
+    
+    path.setAttribute('d', d);
+    path.style.opacity = '0.8';
 }
 
 function renderQueueStatus(data) {

@@ -99,7 +99,22 @@ The core of StadiumFlow is its **Contextual Weighting Algorithm**.
 
 ---
 
-## 🏁 How to Run
+## 🏗️ Architectural Decisions
+### Why a "Digital Twin" Simulation?
+A common question is: *"Why not use a public API for stadium crowd data?"*
+- **Privacy & Security**: Real-time internal crowd telemetry (IoT sensor data) is proprietary and highly sensitive. No public API provides live gate-level density for free.
+- **Reliability (Deterministic Testing)**: By building a **Gaussian Simulation Engine**, we can test our AI's decision-making under "Stress Scenarios" (90%+ congestion) that wouldn't be available via a real-world API during a 3-minute hackathon demo.
+- **Production Path**: The system is built with an **Interchangeable Provider Pattern**. The `engine.py` module can be swapped with a live Google Maps Indoor or IoT WebSocket hook without changing a single line of AI logic.
+
+---
+
+## 🔌 External API Roadmap
+The system is architected to "Hook" into the following public streams:
+- **[TheSportsDB](https://www.thesportsdb.com/)**: For live match scoring events that trigger pre-emptive surge management.
+- **[OpenWeather API](https://openweathermap.org/)**: To dynamically redirect fans to "Covered" concourses during sudden weather events.
+- **[Google Maps Indoor API](https://developers.google.com/maps/documentation/gaming/concepts/indoor-mapping)**: For transition from schematic grids to high-fidelity architectural polylines.
+
+---
 1. **Setup**: `cd backend && pip install -r requirements.txt`
 2. **Credentials**: Add `GEMINI_API_KEY` to `backend/.env` (optional fallback included).
 3. **Launch**: `python app.py`

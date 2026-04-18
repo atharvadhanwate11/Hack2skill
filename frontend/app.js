@@ -54,7 +54,8 @@ function renderMapNodes(data) {
 
     let allLocations = [];
     if (currentFilter === 'full') {
-        allLocations = [...data.gates, ...data.food_stalls, ...data.washrooms];
+        allLocations = [...data.gates, ...data.food_stalls, ...data.washrooms, ...data.destinations];
+        if (data.user) allLocations.push(data.user);
     } else if (currentFilter === 'food') {
         allLocations = data.food_stalls;
     } else if (currentFilter === 'washrooms') {
@@ -75,10 +76,22 @@ function renderMapNodes(data) {
         node.style.left = `${loc.pos[0]}%`;
         node.style.top = `${loc.pos[1]}%`;
         
-        // Color based on crowd
+        // Color based on type or crowd
         let color = 'var(--green)';
-        if (loc.crowd > 40) color = 'var(--yellow)';
-        if (loc.crowd > 75) color = 'var(--red)';
+        if (loc.type === 'Self') {
+            color = 'var(--primary)'; // Electric Blue
+            node.style.boxShadow = '0 0 20px var(--primary)';
+            node.style.zIndex = '101';
+            node.innerHTML = '<div style="width:100%; height:100%; background:white; border-radius:50%; border:2px solid var(--primary);"></div>';
+        } else if (loc.type === 'Personal') {
+            color = '#FFD700'; // Gold for destination
+            node.style.boxShadow = '0 0 15px #FFD700';
+            node.style.zIndex = '100';
+        } else if (loc.crowd > 40) {
+            color = 'var(--yellow)';
+        } else if (loc.crowd > 75) {
+            color = 'var(--red)';
+        }
         
         node.style.backgroundColor = color;
         node.style.color = color;

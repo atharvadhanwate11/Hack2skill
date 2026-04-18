@@ -25,5 +25,10 @@
   ],
   "destinations": [
     {"id": "D1", "name": "My Seat (Block B4)", "pos": [45, 45], "crowd": 0, "wait": 0, "type": "Personal"}
-  ]
+  ],
+  "user": {
+    "name": "You",
+    "pos": [15, 65],
+    "type": "Self"
+  }
 }

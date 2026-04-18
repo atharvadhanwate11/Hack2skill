@@ -22,5 +22,8 @@
     {"id": "S2", "name": "Standard West", "crowd": 85},
     {"id": "S3", "name": "Standard East", "crowd": 60},
     {"id": "S4", "name": "North Stand", "crowd": 40}
+  ],
+  "destinations": [
+    {"id": "D1", "name": "My Seat (Block B4)", "pos": [45, 45], "crowd": 0, "wait": 0, "type": "Personal"}
   ]
 }

@@ -1,5 +1,6 @@
 import os
 import json
+import math
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 import google.generativeai as genai
@@ -45,17 +46,15 @@ def get_status():
 
 @app.route('/api/notifications', methods=['GET'])
 def get_notifications():
-    stadium, _ = engine.get_current_state()
+    stadium, event = engine.get_current_state()
     alerts = []
     
-    # Logic-based alert generation
+    if "Surge" in event['phase']:
+        alerts.append({"type": "warning", "msg": f"SYSTEM ALERT: {event['phase']} initiated. Expect high density."})
+
     for gate in stadium['gates']:
-        if gate['crowd'] > 75:
-            alerts.append({"type": "warning", "msg": f"Congestion Alert: {gate['name']} is at capacity."})
-    
-    for stall in stadium['food_stalls']:
-        if stall['wait'] < 5:
-            alerts.append({"type": "info", "msg": f"Efficiency Boost: {stall['name']} has <5 min wait."})
+        if gate['crowd'] > 85:
+            alerts.append({"type": "warning", "msg": f"CRITICAL: {gate['name']} is reaching flow capacity limits."})
 
     return jsonify(alerts[:3])
 
@@ -63,92 +62,64 @@ def get_notifications():
 @app.route('/api/chat', methods=['POST'])
 def chat():
     user_query = request.json.get('query', '')
-    user_location = request.json.get('location', 'Standard West (Section S2)')
+    user_pos = request.json.get('pos', [15, 65]) # Get actual coordinates
     
     stadium, event = engine.get_current_state()
     
     # INDUSTRIAL-GRADE AI ORCHESTRATOR PROMPT
     prompt = f"""
-    SYSTEM ROLE: You are the StadiumFlow Real-time Navigation Logic Engine. 
-    DATA CONTEXT:
-    - User Current Pos: {user_location}
-    - Stadium Sensors: {json.dumps(stadium)}
-    - Game Context: {json.dumps(event)}
+    SYSTEM ROLE: StadiumFlow Optimization Engine.
+    CONTEXT: {event['phase']} at {event['time_remaining']}.
+    USER_POS: {user_pos}
+    SENSOR_DATA: {json.dumps(stadium)}
 
-    ALGORITHM RULES:
-    1. SPATIAL MATH: Calculate 'Proximity' using visual [x,y] coordinates from the sensors.
-    2. URGENCY WEIGHTING: 
-       - If Game Time < 5 mins or 'Restarts' soon: Weight logic toward MINIMUM WAIT TIME.
-       - Otherwise: Weight logic toward MINIMUM CROWD DENSITY.
-    3. VALIDATION: Only recommend facilities that exist in the provided 'Stadium Sensors' list.
-    4. FORMAT: Use the following structural template strictly. No conversational filler.
-
-    ### RECOMMENDATION: [PLACE NAME]
-    
-    **Reasoning Matrix:**
-    | Factor | Status | Impact Score |
-    | :--- | :--- | :--- |
-    | **Spatial Distance** | [Calculated distance] | [High/Mid/Low] |
-    | **Wait Efficiency** | [Wait Time] min queue | [High/Mid/Low] |
-    | **Crowd Comfort** | [Crowd %] density | [Optimized/Congested] |
-
-    **AI Insight:** [One technical sentence on why this choice is optimal for the current game clock: {event['time_remaining']}].
-
-    **Alternative:** [Next best facility]
+    LOGIC:
+    1. CALCULATE Euclidean distance from User_Pos to each facility.
+    2. SCORE facilities using: (WaitTime * 0.5) + (CrowdDensity * 0.3) + (Distance * 0.2).
+    3. If PHASE involves 'Surge' or 'Egress', double the 'WaitTime' weight.
+    4. RESPOND with a Markdown Matrix. Be deterministic.
     """
     
     try:
         if not GEMINI_API_KEY: raise ValueError("No API Key")
-        # Initialize with low temperature for deterministic reliability
         model = genai.GenerativeModel('gemini-1.5-flash', generation_config={"temperature": 0.1})
         response = model.generate_content(prompt)
         return jsonify({"response": response.text})
     except Exception as e:
-        # Robust Fallback to Decision-Tree Mock
-        return jsonify({"response": mock_decision_engine(user_query, stadium, event)})
+        return jsonify({"response": mock_decision_engine(user_query, user_pos, stadium, event)})
 
-def mock_decision_engine(query, data, event):
+def mock_decision_engine(query, user_pos, data, event):
     query = query.lower()
-    time_ctx = event.get('time_remaining', '10 mins')
-    is_urgent = any(x in time_ctx.lower() for x in ["mins", "1'", "2'", "3'"])
-
-    # Mapping keywords to data categories
-    target_data = []
+    targets = []
     category = "Facility"
     
-    if any(x in query for x in ['food', 'eat', 'hungry', 'snack']):
-        target_data = data['food_stalls']
-        category = "Food Stall"
-    elif any(x in query for x in ['washroom', 'toilet', 'piss', 'restroom', 'bathroom']):
-        target_data = data['washrooms']
-        category = "Washroom"
-    elif any(x in query for x in ['gate', 'exit', 'leave', 'out']):
-        target_data = data['gates']
-        category = "Gate / Exit"
+    if any(x in query for x in ['food', 'eat']): targets, category = data['food_stalls'], "Food Stall"
+    elif any(x in query for x in ['washroom', 'toilet', 'piss']): targets, category = data['washrooms'], "Washroom"
+    elif any(x in query for x in ['gate', 'exit', 'leave']): targets, category = data['gates'], "Gate / Exit"
 
-    if target_data:
-        # Optimization Logic: Sort by wait time during urgency, else by crowd density
-        optimized = sorted(target_data, key=lambda x: x['wait'] if is_urgent else x['crowd'])
-        best, second = optimized[0], optimized[1]
-        
-        mode = "🚀 FASTEST PATH" if is_urgent else "🌈 COMFORT PATH"
-        
-        return f"""### RECOMMENDATION: {best['name']}
-        
-**Reasoning Matrix:**
-| Factor | Status |
-| :--- | :--- |
-| **Logic Mode** | {mode} |
-| **Queue Time** | {best['wait']} mins |
-| **Crowd Level** | {best['crowd']}% |
+    if not targets:
+        return "### 🔎 Data Search\nPlease specify if you are looking for a **Gate**, **Food Stall**, or **Washroom**."
 
-**AI Insight:** Based on localized telemetry, this {category} is your optimal choice for the current {event['time_remaining']} window.
+    # CALCULATE OPTIMIZED SCORE (Weighted Utility)
+    def get_score(f):
+        dist = math.sqrt((f['pos'][0]-user_pos[0])**2 + (f['pos'][1]-user_pos[1])**2)
+        # Weighting: Wait (50%), Distance (30%), Crowd (20%)
+        return (f['wait'] * 0.5) + (dist * 0.3) + (f['crowd'] * 0.2)
 
-**Alternative:** {second['name']} (Slightly more congested)"""
+    optimized = sorted(targets, key=get_score)
+    best, second = optimized[0], optimized[1]
+    
+    return f"""### OPTIMIZED: {best['name']}
+    
+**System Analysis (Phase: {event['phase']}):**
+- **Distance Score**: {round(math.sqrt((best['pos'][0]-user_pos[0])**2 + (best['pos'][1]-user_pos[1])**2), 1)} units
+- **Wait Time**: {best['wait']} mins (Optimal for sector)
+- **Crowd Pressure**: {best['crowd']}%
 
-    return "### 🔎 Specify Destination\nI need to know if you are looking for a **Gate**, **Food Stall**, or **Washroom** to calculate the optimal path for you."
+**AI Recommendation:** We've calculated a **Weighted Utility Score** for all nearby {category} facilities. {best['name']} provides the lowest 'Time-to-Service' ratio.
+
+**Secondary Choice:** {second['name']}"""
 
 if __name__ == '__main__':
-    # Use environment port for deployment, default to 5000 for local dev
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)

@@ -250,7 +250,7 @@ async function sendMessage() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
                 query: text,
-                location: `Current Position (X:${Math.round(userLivePos.x)}, Y:${Math.round(userLivePos.y)})`
+                pos: [userLivePos.x, userLivePos.y]
             })
         });
         const data = await response.json();

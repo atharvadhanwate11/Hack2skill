@@ -122,4 +122,6 @@ def mock_decision_engine(query, data, event):
     return "Recommendation: Please specify your destination (Gate, Food, or Washroom).\n\nWhy:\n* I need context to calculate the optimal time-path\n* Live flow varies significantly between facilities\n* Current location is detected as Section A"
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    # Use environment port for deployment, default to 5000 for local dev
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)

@@ -1,9 +1,9 @@
 {
   "gates": [
-    {"id": "G1", "name": "North Gate", "pos": [10, 50], "crowd": 20, "wait": 5},
-    {"id": "G2", "name": "South Gate", "pos": [90, 50], "crowd": 80, "wait": 25},
-    {"id": "G3", "name": "East Gate", "pos": [50, 10], "crowd": 45, "wait": 10},
-    {"id": "G4", "name": "West Gate", "pos": [50, 90], "crowd": 15, "wait": 3}
+    {"id": "G1", "name": "North Gate", "pos": [10, 50], "crowd": 20, "wait": 5, "mode": "Entry", "capacity": 100},
+    {"id": "G2", "name": "South Gate", "pos": [90, 50], "crowd": 80, "wait": 25, "mode": "Entry", "capacity": 80},
+    {"id": "G3", "name": "East Gate", "pos": [50, 10], "crowd": 45, "wait": 10, "mode": "Both", "capacity": 150},
+    {"id": "G4", "name": "West Gate", "pos": [50, 90], "crowd": 15, "wait": 3, "mode": "Exit", "capacity": 200}
   ],
   "food_stalls": [
     {"id": "F1", "name": "Burger Hub", "pos": [30, 30], "crowd": 60, "wait": 15, "type": "Fast Food"},

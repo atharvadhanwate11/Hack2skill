@@ -37,6 +37,6 @@ wheels/
 Thumbs.db
 
 # Project Specific
-backend/stadium_data.json
 backend/__pycache__/
 frontend/__pycache__/
+*.log

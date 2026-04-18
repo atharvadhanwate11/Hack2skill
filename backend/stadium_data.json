@@ -1,0 +1,26 @@
+{
+  "gates": [
+    {"id": "G1", "name": "North Gate", "pos": [10, 50], "crowd": 20, "wait": 5},
+    {"id": "G2", "name": "South Gate", "pos": [90, 50], "crowd": 80, "wait": 25},
+    {"id": "G3", "name": "East Gate", "pos": [50, 10], "crowd": 45, "wait": 10},
+    {"id": "G4", "name": "West Gate", "pos": [50, 90], "crowd": 15, "wait": 3}
+  ],
+  "food_stalls": [
+    {"id": "F1", "name": "Burger Hub", "pos": [30, 30], "crowd": 60, "wait": 15, "type": "Fast Food"},
+    {"id": "F2", "name": "Pizza Corner", "pos": [70, 30], "crowd": 90, "wait": 30, "type": "Italian"},
+    {"id": "F3", "name": "Taco Bell", "pos": [30, 70], "crowd": 30, "wait": 8, "type": "Mexican"},
+    {"id": "F4", "name": "Healthy Bites", "pos": [70, 70], "crowd": 10, "wait": 2, "type": "Salads"}
+  ],
+  "washrooms": [
+    {"id": "W1", "name": "Section A Washroom", "pos": [20, 20], "crowd": 40, "wait": 4},
+    {"id": "W2", "name": "Section B Washroom", "pos": [80, 20], "crowd": 70, "wait": 12},
+    {"id": "W3", "name": "Section C Washroom", "pos": [20, 80], "crowd": 10, "wait": 1},
+    {"id": "W4", "name": "Section D Washroom", "pos": [80, 80], "crowd": 55, "wait": 8}
+  ],
+  "sections": [
+    {"id": "S1", "name": "VVIP Box", "crowd": 30},
+    {"id": "S2", "name": "Standard West", "crowd": 85},
+    {"id": "S3", "name": "Standard East", "crowd": 60},
+    {"id": "S4", "name": "North Stand", "crowd": 40}
+  ]
+}

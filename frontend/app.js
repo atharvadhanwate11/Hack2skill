@@ -1,7 +1,8 @@
 const API_BASE = 'http://127.0.0.1:5000/api';
 let currentFilter = 'full';
-let userLivePos = { x: 15, y: 65 }; // Default fallback
+let userLivePos = { x: 15, y: 65 }; 
 let initialGPS = null;
+let userHeading = 0; // Direction in degrees
 
 // DOM Elements
 const chatMessages = document.getElementById('chat-messages');
@@ -16,7 +17,8 @@ const navItems = document.querySelectorAll('.nav-item');
 document.addEventListener('DOMContentLoaded', () => {
     updateData();
     updateNotifications();
-    initLocationWatcher(); // Start Live GPS
+    initLocationWatcher(); 
+    initOrientationWatcher(); // Start Heading Tracking
     setInterval(updateData, 5000); 
     setInterval(updateNotifications, 10000);
 
@@ -57,6 +59,29 @@ function initLocationWatcher() {
             console.warn("GPS Access Denied or Unavailable. Using fixed location.");
         }, { enableHighAccuracy: true });
     }
+}
+
+function initOrientationWatcher() {
+    // For iOS (requires permission for orientation)
+    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+        document.body.addEventListener('click', () => {
+            DeviceOrientationEvent.requestPermission();
+        }, { once: true });
+    }
+
+    window.addEventListener('deviceorientation', (event) => {
+        if (event.webkitCompassHeading) {
+            userHeading = event.webkitCompassHeading;
+        } else {
+            userHeading = 360 - event.alpha;
+        }
+        
+        // Update arrow rotation immediately if dot exists
+        const arrow = document.getElementById('user-arrow');
+        if (arrow) {
+            arrow.style.transform = `translate(-50%, -100%) rotate(${userHeading}deg)`;
+        }
+    }, true);
 }
 
 // Fetch and Update Stadium Data
@@ -118,7 +143,10 @@ function renderMapNodes(data) {
             color = 'var(--primary)'; // Electric Blue
             node.style.boxShadow = '0 0 20px var(--primary)';
             node.style.zIndex = '101';
-            node.innerHTML = '<div style="width:100%; height:100%; background:white; border-radius:50%; border:2px solid var(--primary);"></div>';
+            node.innerHTML = `
+                <div id="user-arrow" style="position:absolute; top:50%; left:50%; width:0; height:0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 12px solid var(--primary); transform-origin: 50% 100%; transform: translate(-50%, -100%) rotate(${userHeading}deg); filter: drop-shadow(0 0 5px var(--primary));"></div>
+                <div style="width:100%; height:100%; background:white; border-radius:50%; border:2px solid var(--primary); position:relative; z-index:2;"></div>
+            `;
         } else if (loc.type === 'Personal') {
             color = '#FFD700'; // Gold for destination
             node.style.boxShadow = '0 0 15px #FFD700';

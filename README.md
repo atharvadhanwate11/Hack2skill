@@ -1,6 +1,8 @@
-# 🏟️ StadiumFlow: Real-Time Optimization Engine
-
-**Empowering massive venues with data-driven flow control and AI-guided attendee navigation.**
+<div align="center">
+  <img src="frontend/logo.png" width="120" height="120" alt="StadiumFlow AI Logo">
+  <h1>StadiumFlow AI</h1>
+  <p><b>Mastering the Pulse of Massive Venues with Real-Time Data & Cognitive Intelligence.</b></p>
+</div>
 
 ---
 
@@ -10,7 +12,7 @@ Large-scale sporting events suffer from **Flash Congestion**—sudden, extreme s
 - **Safety Risks**: Bottle-necks at gates increase evacuation risks.
 - **Lost Revenue**: Long food stall queues lead to abandoned purchases.
 
-## 💡 The Solution: StadiumFlow
+## 💡 The Solution: StadiumFlow AI
 StadiumFlow is not just a digital map; it is a **Decision-Driven Optimization Engine**. By cross-referencing live sensor data (simulated), event timing, and user location, it provides high-precision navigational guidance that balances venue throughput with attendee comfort.
 
 ---
@@ -117,8 +119,10 @@ The system is architected to "Hook" into the following public streams:
 - **[Google Maps Indoor API](https://developers.google.com/maps/documentation/gaming/concepts/indoor-mapping)**: For transition from schematic grids to high-fidelity architectural polylines.
 
 ---
+
+## 🚀 How to Run (Local)
 1. **Setup**: `cd backend && pip install -r requirements.txt`
-2. **Credentials**: Add `GEMINI_API_KEY` to `backend/.env` (optional fallback included).
+2. **Credentials**: Add `GEMINI_API_KEY` to `backend/.env`.
 3. **Launch**: `python app.py`
 4. **Access**: Navigate to `http://127.0.0.1:5000`
 
@@ -129,4 +133,4 @@ The system is architected to "Hook" into the following public streams:
 - **Predictive Surge Logic**: Using ML to predict bathroom rushes 5 minutes before they happen.
 - **Ticketing Integration**: Direct-to-seat turnstile optimization.
 
-**StadiumFlow — Masters of the Stadium Pulse.**
+**StadiumFlow AI — Masters of the Stadium Pulse.**

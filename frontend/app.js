@@ -1,5 +1,7 @@
 const API_BASE = 'http://127.0.0.1:5000/api';
 let currentFilter = 'full';
+let userLivePos = { x: 15, y: 65 }; // Default fallback
+let initialGPS = null;
 
 // DOM Elements
 const chatMessages = document.getElementById('chat-messages');
@@ -14,6 +16,7 @@ const navItems = document.querySelectorAll('.nav-item');
 document.addEventListener('DOMContentLoaded', () => {
     updateData();
     updateNotifications();
+    initLocationWatcher(); // Start Live GPS
     setInterval(updateData, 5000); 
     setInterval(updateNotifications, 10000);
 
@@ -28,12 +31,45 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+function initLocationWatcher() {
+    if ("geolocation" in navigator) {
+        navigator.geolocation.watchPosition((position) => {
+            const { latitude, longitude } = position.coords;
+            
+            if (!initialGPS) {
+                initialGPS = { lat: latitude, lon: longitude };
+            }
+
+            // Map GPS Delta to Stadium Grid (Rough scaling: 0.0001 deg ~= 11 meters)
+            // This will move your blue dot as you walk
+            const deltaLat = latitude - initialGPS.lat;
+            const deltaLon = longitude - initialGPS.lon;
+
+            userLivePos.x = 15 + (deltaLon * 100000); // Scale factor for visual movement
+            userLivePos.y = 65 - (deltaLat * 100000); 
+
+            // Keep within map bounds
+            userLivePos.x = Math.max(5, Math.min(95, userLivePos.x));
+            userLivePos.y = Math.max(5, Math.min(95, userLivePos.y));
+            
+            console.log("Live GPS sync:", userLivePos);
+        }, (err) => {
+            console.warn("GPS Access Denied or Unavailable. Using fixed location.");
+        }, { enableHighAccuracy: true });
+    }
+}
+
 // Fetch and Update Stadium Data
 async function updateData() {
     try {
         const response = await fetch(`${API_BASE}/status`);
         const data = await response.json();
         
+        // Inject Live GPS position into stadium data
+        if (data.stadium.user) {
+            data.stadium.user.pos = [userLivePos.x, userLivePos.y];
+        }
+
         renderMapNodes(data.stadium);
         renderQueueStatus(data.stadium);
         updateScoreboard(data.event);
@@ -170,7 +206,10 @@ async function sendMessage() {
         const response = await fetch(`${API_BASE}/chat`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ query: text })
+            body: JSON.stringify({ 
+                query: text,
+                location: `Current Position (X:${Math.round(userLivePos.x)}, Y:${Math.round(userLivePos.y)})`
+            })
         });
         const data = await response.json();
         

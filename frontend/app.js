@@ -258,7 +258,7 @@ async function sendMessage() {
         // Replace typing with actual response
         const typingMsg = document.getElementById(typingId);
         if (typingMsg) {
-            typingMsg.textContent = data.response;
+            typingMsg.innerHTML = marked.parse(data.response);
         }
     } catch (err) {
         document.getElementById(typingId).textContent = "Sorry, I can't connect to the AI right now. Please try again later.";
@@ -269,7 +269,13 @@ function appendMessage(text, side, id = null) {
     const msg = document.createElement('div');
     msg.className = `message ${side}`;
     if (id) msg.id = id;
-    msg.textContent = text;
+    
+    if (side === 'ai') {
+        msg.innerHTML = marked.parse(text);
+    } else {
+        msg.textContent = text;
+    }
+    
     chatMessages.appendChild(msg);
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }

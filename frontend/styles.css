@@ -285,6 +285,24 @@ body {
     box-shadow: 0 4px 15px rgba(0,0,0,0.03);
 }
 
+.message.ai table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 0.8rem;
+}
+
+.message.ai th, .message.ai td {
+    border: 1px solid #e2e8f0;
+    padding: 8px;
+    text-align: left;
+}
+
+.message.ai th {
+    background: #f8fafc;
+    color: var(--primary);
+}
+
 .message.user {
     background: var(--primary);
     color: white;

@@ -4,7 +4,7 @@ import math
 import html
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
-import google.generativeai as genai
+from google import genai
 from dotenv import load_dotenv
 
 # Internal Modules
@@ -22,8 +22,8 @@ CORS(app)
 
 # --- Configuration ---
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
+# Client will be initialized dynamically if key exists
+
 
 # --- Routing: Static Files ---
 @app.route('/')
@@ -87,8 +87,11 @@ def chat():
     
     try:
         if not GEMINI_API_KEY: raise ValueError("No API Key")
-        model = genai.GenerativeModel('gemini-1.5-flash', generation_config={"temperature": 0.1})
-        response = model.generate_content(prompt)
+        client = genai.Client(api_key=GEMINI_API_KEY)
+        response = client.models.generate_content(
+            model='gemini-2.0-flash',
+            contents=prompt,
+        )
         return jsonify({"response": response.text})
     except Exception as e:
         return jsonify({"response": mock_decision_engine(user_query, user_pos, stadium, event)})

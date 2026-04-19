@@ -46,15 +46,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function updateVenueInfo(venueId) {
     const venueMap = {
-        'olympic': { name: 'Olympic Main Stadium', addr: 'Queen Elizabeth Olympic Park, London', lat: 51.5388, lon: -0.0166 },
-        'lords': { name: 'Lord\'s Cricket Ground', addr: 'St John\'s Wood Rd, London', lat: 51.5298, lon: -0.1722 },
-        'metlife': { name: 'MetLife Stadium', addr: '1 MetLife Stadium Dr, NJ, USA', lat: 40.8122, lon: -74.0744 }
+        'olympic': { 
+            name: 'Olympic Main Stadium', 
+            addr: 'Queen Elizabeth Olympic Park, London', 
+            iframe: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2482.355152528766!2d-0.019124483750892015!3d51.53874311728286!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x48761d418047970d%3A0x6e9f8db11c9c0b11!2sLondon%20Stadium!5e0!3m2!1sen!2suk!4v1713098522306!5m2!1sen!2suk'
+        },
+        'lords': { 
+            name: 'Lord\'s Cricket Ground', 
+            addr: 'St John\'s Wood Rd, London', 
+            iframe: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2482.6865242784537!2d-0.17482812328114407!3d51.52994441052601!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x48761aeba50198c3%3A0x1b41d24c015b67af!2sLord&#39;s%20Cricket%20Ground!5e0!3m2!1sen!2suk!4v1713098656752!5m2!1sen!2suk'
+        },
+        'metlife': { 
+            name: 'MetLife Stadium', 
+            addr: '1 MetLife Stadium Dr, NJ, USA', 
+            iframe: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3020.2520863071275!2d-74.07686882343277!3d40.81363293086705!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c2f861acd5c829%3A0x7d29037cba8b1c4b!2sMetLife%20Stadium!5e0!3m2!1sen!2suk!4v1713098730948!5m2!1sen!2suk'
+        }
     };
 
     const venue = venueMap[venueId];
     if (venue) {
         document.getElementById('venue-address').textContent = venue.addr;
         document.getElementById('gmaps-link').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue.addr)}`;
+        
+        // Update the Live iframe
+        const iframe = document.getElementById('gmaps-iframe');
+        if (iframe) iframe.src = venue.iframe;
         
         // Push a system message about venue change
         appendMessage(`Switching intelligence stream to **${venue.name}**. Calibration complete.`, 'ai');

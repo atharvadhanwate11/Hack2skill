@@ -283,11 +283,12 @@ body {
 }
 
 .message.ai {
-    background: white;
+    background: rgba(255, 255, 255, 0.05);
     color: var(--text-main);
     align-self: flex-start;
-    border: 1px solid var(--glass-border);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 .message.ai table {
@@ -298,19 +299,20 @@ body {
 }
 
 .message.ai th, .message.ai td {
-    border: 1px solid #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 8px;
     text-align: left;
 }
 
 .message.ai th {
-    background: #f8fafc;
+    background: rgba(0, 0, 0, 0.2);
     color: var(--primary);
 }
 
 .message.user {
     background: var(--primary);
-    color: white;
+    color: #0f172a; /* Dark text on bright cyan background */
+    font-weight: 500;
     align-self: flex-end;
     box-shadow: 0 10px 20px var(--primary-glow);
 }
@@ -323,12 +325,16 @@ body {
 
 .chat-input {
     flex: 1;
-    background: white;
+    background: rgba(0, 0, 0, 0.2);
     border: 1px solid var(--glass-border);
     padding: 10px 15px;
     border-radius: 10px;
     color: var(--text-main);
     outline: none;
+}
+
+.chat-input::placeholder {
+    color: var(--text-dim);
 }
 
 .send-btn {

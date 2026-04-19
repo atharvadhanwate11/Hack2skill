@@ -31,7 +31,69 @@ document.addEventListener('DOMContentLoaded', () => {
             updateData(); // Refresh map with filter
         });
     });
+
+    // Venue Selector Handler
+    const venueSelector = document.getElementById('venue-selector');
+    venueSelector.addEventListener('change', (e) => {
+        updateVenueInfo(e.target.value);
+    });
+    
+    // Initial venue update
+    updateVenueInfo(venueSelector.value);
+
+    initVoiceInteraction();
 });
+
+function updateVenueInfo(venueId) {
+    const venueMap = {
+        'olympic': { name: 'Olympic Main Stadium', addr: 'Queen Elizabeth Olympic Park, London', lat: 51.5388, lon: -0.0166 },
+        'lords': { name: 'Lord\'s Cricket Ground', addr: 'St John\'s Wood Rd, London', lat: 51.5298, lon: -0.1722 },
+        'metlife': { name: 'MetLife Stadium', addr: '1 MetLife Stadium Dr, NJ, USA', lat: 40.8122, lon: -74.0744 }
+    };
+
+    const venue = venueMap[venueId];
+    if (venue) {
+        document.getElementById('venue-address').textContent = venue.addr;
+        document.getElementById('gmaps-link').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue.addr)}`;
+        
+        // Push a system message about venue change
+        appendMessage(`Switching intelligence stream to **${venue.name}**. Calibration complete.`, 'ai');
+    }
+}
+
+function initVoiceInteraction() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+
+    // Create voice button near chat input
+    const inputArea = document.querySelector('.chat-input-area');
+    const voiceBtn = document.createElement('button');
+    voiceBtn.className = 'send-btn';
+    voiceBtn.style.background = 'var(--secondary)';
+    voiceBtn.innerHTML = '🎤';
+    voiceBtn.title = 'Voice Control';
+    inputArea.insertBefore(voiceBtn, chatInput);
+
+    voiceBtn.onclick = () => {
+        recognition.start();
+        voiceBtn.style.opacity = '0.5';
+    };
+
+    recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        chatInput.value = transcript;
+        sendMessage();
+        voiceBtn.style.opacity = '1';
+    };
+
+    recognition.onerror = () => {
+        voiceBtn.style.opacity = '1';
+    };
+}
 
 function initLocationWatcher() {
     if ("geolocation" in navigator) {

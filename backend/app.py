@@ -1,6 +1,7 @@
 import os
 import json
 import math
+import html
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 import google.generativeai as genai
@@ -61,23 +62,27 @@ def get_notifications():
 # --- API: AI Orchestration ---
 @app.route('/api/chat', methods=['POST'])
 def chat():
-    user_query = request.json.get('query', '')
+    # SECURITY: Input sanitization to prevent injection
+    raw_query = request.json.get('query', '')
+    user_query = html.escape(raw_query.strip() if isinstance(raw_query, str) else '')
     user_pos = request.json.get('pos', [15, 65]) # Get actual coordinates
     
     stadium, event = engine.get_current_state()
     
     # INDUSTRIAL-GRADE AI ORCHESTRATOR PROMPT
     prompt = f"""
-    SYSTEM ROLE: StadiumFlow Optimization Engine.
-    CONTEXT: {event['phase']} at {event['time_remaining']}.
-    USER_POS: {user_pos}
-    SENSOR_DATA: {json.dumps(stadium)}
+    SYSTEM ROLE: You are StadiumFlow, an expert AI navigation assistant for large venues.
+    USER QUERY: "{user_query}"
+    USER POSITION (x,y): {user_pos}
+    CURRENT EVENT CONTEXT: {event['phase']} at {event['time_remaining']}
+    LIVE SENSOR DATA: {json.dumps(stadium)}
 
     LOGIC:
-    1. CALCULATE Euclidean distance from User_Pos to each facility.
-    2. SCORE facilities using: (WaitTime * 0.5) + (CrowdDensity * 0.3) + (Distance * 0.2).
-    3. If PHASE involves 'Surge' or 'Egress', double the 'WaitTime' weight.
-    4. RESPOND with a Markdown Matrix. Be deterministic.
+    1. Analyze the USER QUERY to understand what facility they are looking for.
+    2. CALCULATE Euclidean distance from User_Pos to each relevant facility.
+    3. SCORE facilities using: (WaitTime * 0.5) + (CrowdDensity * 0.3) + (Distance * 0.2).
+    4. If PHASE involves 'Surge' or 'Egress', double the 'WaitTime' weight.
+    5. RESPOND with a Markdown Matrix. Be deterministic, answer the query specifically.
     """
     
     try:

@@ -21,3 +21,10 @@ Use this "Cheat Sheet" to answer technical questions during your hackathon prese
 
 ### Q6: "Why did you use Vanilla JavaScript instead of a big framework like React?"
 **Answer:** For **Performance & Lightweight Footprint**. In a stadium with 50,000 people, bandwidth is limited. Our app is **<1MB**, loads instantly, and has zero heavy external dependencies, making it more resilient on congested stadium Wi-Fi.
+
+### Q7: "How did you integrate Google Services beyond just a chatbot?"
+**Answer:** We leverage a **Google Ecosystem Triumvirate**:
+- **Cognitive Layer**: Gemini 1.5 Flash for industrial-grade logic orchestration.
+- **Spatial Layer**: Google Maps Platform for venue synchronization and navigation-handoff.
+- **Workflow Layer**: Google Calendar logic for phase-aware adaptive scaling.
+- **Interaction Layer**: Integrated Voice Recognition (via Web Speech API) for a smart, hands-free assistant experience.

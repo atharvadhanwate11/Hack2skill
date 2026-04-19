@@ -30,8 +30,8 @@ StadiumFlow is an **Interconnected Digital Twin Engine**. By cross-referencing p
 ## 🎯 Evaluation Focus: Meeting the Top 50 Criteria
 
 ### 1. 🚀 Google Services Integration
-- **Google Gemini-1.5-Flash**: Orchaestrates complex navigation decisions using real-time sensor data.
-- **Google Maps Platform**: Dynamic venue synchronization and external navigation linking for 3 major global stadiums.
+- **Google GenAI (Gemini-2.0-Flash)**: Orchestrates complex navigation decisions using real-time sensor data via the latest, officially supported `google-genai` SDK.
+- **Google Maps Platform**: Live embedded `<iframe>` integration for dynamic, in-app venue synchronization across 3 major global stadiums.
 - **Google Calendar**: Live event schedule tracking for phase-aware AI adaptation.
 - **Google Fonts**: Premium typography using `Outfit` and `Inter`.
 

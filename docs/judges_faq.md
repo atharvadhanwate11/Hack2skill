@@ -24,7 +24,7 @@ Use this "Cheat Sheet" to answer technical questions during your hackathon prese
 
 ### Q7: "How did you integrate Google Services beyond just a chatbot?"
 **Answer:** We leverage a **Google Ecosystem Triumvirate**:
-- **Cognitive Layer**: Gemini 1.5 Flash for industrial-grade logic orchestration.
-- **Spatial Layer**: Google Maps Platform for venue synchronization and navigation-handoff.
+- **Cognitive Layer**: Gemini 2.0 Flash (using the modern `google-genai` SDK) for industrial-grade logic orchestration.
+- **Spatial Layer**: Live Google Maps Embedded Iframes for real-time visual venue synchronization.
 - **Workflow Layer**: Google Calendar logic for phase-aware adaptive scaling.
 - **Interaction Layer**: Integrated Voice Recognition (via Web Speech API) for a smart, hands-free assistant experience.
